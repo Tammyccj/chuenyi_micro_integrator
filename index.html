@@ -603,7 +603,7 @@
                     
                     slider.addEventListener("mousedown", slideReady);
                     window.addEventListener("mouseup", slideFinish);
-                    slider.addEventListener("touchstart", slideReady, {passive: false});
+                    slider.addEventListener("touchstart", slideReady);
                     window.addEventListener("touchend", slideFinish);
                 }
 
@@ -611,17 +611,21 @@
                 window.addEventListener('resize', setDimensions);
                 
                 function slideReady(e) {
-                    e.preventDefault();
+                    if(e.cancelable) e.preventDefault();
                     clicked = 1;
                     window.addEventListener("mousemove", slideMove);
-                    window.addEventListener("touchmove", slideMove, {passive: false});
+                    window.addEventListener("touchmove", slideMove);
                 }
                 function slideFinish() {
                     clicked = 0;
+                    window.removeEventListener("mousemove", slideMove);
+                    window.removeEventListener("touchmove", slideMove);
                 }
                 function slideMove(e) {
                     var pos;
                     if (clicked == 0) return false;
+                    /* 確保滑動時不會觸發網頁捲動 */
+                    if(e.cancelable && e.type === 'touchmove') e.preventDefault();
                     pos = getCursorPos(e);
                     if (pos < 0) pos = 0;
                     if (pos > w) pos = w;
@@ -649,4 +653,5 @@
 
 </body>
 </html>
+
 
